@@ -7,6 +7,13 @@ using namespace std;
 
 int main()
 {
-	cout << "Hello CMake." << endl;
-	return 0;
+    Set_analog<int> mySet(1);
+    Set_analog<int> twoSet(2, nullptr, &mySet);
+    Set_analog<int> fourSet(4);
+
+    Set_analog<int> threeSet(3, &fourSet, &twoSet);
+
+    threeSet.print();
+    return 0;
 }
+
