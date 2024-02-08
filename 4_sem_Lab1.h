@@ -59,9 +59,13 @@ template<typename T>
 class My_set
 {
 	Node<T>* _element;
+	int _count;
 public:
-	My_set() {};
-	My_set(Node<T>* el) {
+	My_set(): _element(new Node<T>(0)), _count(1) {};
+	My_set(T key): _count(1) {
+		this->_element = new Node<T>(key);
+	}
+	My_set(Node<T>* el): _count(1) {
 		this->_element = new Node<T>(*el);
 	};
 	My_set(My_set<T>& const obj) {
@@ -89,6 +93,7 @@ public:
 			{
 				stk.push(el);
 				this->insert(el->get_key());
+				this->_count++;
 				el = el->get_left();
 			}
 		}
@@ -118,6 +123,7 @@ public:
 			{
 				stk.push(el);
 				this->insert(el->get_key());
+				this->_count++;
 				el = el->get_left();
 			}
 		}
@@ -139,6 +145,7 @@ public:
 			}
 
 			delete current;
+			this->_count--;
 		}
 	}
 
@@ -151,6 +158,7 @@ public:
 			}
 			else if (key < el->get_key() && el->get_left() == nullptr) {
 				el->set_left(new Node(key));
+				this->_count++;
 				return true;
 			}
 			else if (key > el->get_key() && el->get_right() != nullptr)
@@ -159,6 +167,7 @@ public:
 			}
 			else if (key > el->get_key() && el->get_right() == nullptr) {
 				el->set_right(new Node(key));
+				this->_count++;
 				return true;
 			}
 			else {
@@ -171,5 +180,62 @@ public:
 	void print() {
 		this->_element->print();
 	}
+	bool contains(T key) {
+		Node<T>* el = this->_element;
+		if (!el) return false;
 
+		while (true) {
+			if (key < el->get_key() && el->get_left() != nullptr)
+			{
+				el = el->get_left();
+			}
+			else if (key < el->get_key() && el->get_left() == nullptr) {
+				return false;
+			}
+			else if (key > el->get_key() && el->get_right() != nullptr)
+			{
+				el = el->get_right();
+			}
+			else if (key > el->get_key() && el->get_right() == nullptr) {
+				return false;
+			}
+			else if (key == el->get_key()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	bool erase(T key) {
+		Node<T>* el = this->_element;
+		if (el == nullptr) return false;
+		std::stack<Node<T>*> stk;
+		stk.push(el);
+
+		while (true) {
+			if (key < el->get_key() && el->get_left() != nullptr)
+			{
+				el = el->get_left();
+				stk.push(el);
+			}
+			else if (key < el->get_key() && el->get_left() == nullptr) {
+				return false;
+			}
+			else if (key > el->get_key() && el->get_right() != nullptr)
+			{
+				el = el->get_right();
+				stk.push(el);
+			}
+			else if (key > el->get_key() && el->get_right() == nullptr) {
+				return false;
+			}
+			else if (key == el->get_key()) {
+				stk.pop();
+				delete el;
+				el = stk.top();
+				el->set_left(nullptr);
+				return true;
+			}
+		}
+		return false;
+	}
 };
