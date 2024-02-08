@@ -7,13 +7,18 @@ using namespace std;
 
 int main()
 {
-    Set_analog<int> mySet(1);
-    Set_analog<int> twoSet(2, nullptr, &mySet);
-    Set_analog<int> fourSet(4);
+    setlocale(LC_ALL, "ru");
 
-    Set_analog<int> threeSet(3, &fourSet, &twoSet);
+    List<int> mySet(1);
+    List<int> twoSet(2, nullptr, &mySet);
+    List<int> fourSet(4);
+
+    List<int> threeSet(3, &fourSet, &twoSet);
+
+    List<int> fiveSet(threeSet);
 
     threeSet.print();
+    fiveSet.print();
     return 0;
 }
 
