@@ -9,34 +9,37 @@ int main()
 {
     setlocale(LC_ALL, "ru");
 
-    List<int> mySet(1);
-    List<int> twoSet(2, nullptr, &mySet);
-    List<int> fourSet(4);
+    Node<int> mySet(1);
+    Node<int> twoSet(2, nullptr, &mySet);
+    Node<int> fourSet(4);
 
-    List<int> threeSet(3, &fourSet, &twoSet);
+    Node<int> threeSet(3, &fourSet, &twoSet);
 
-    List<int> fiveSet(threeSet);
+    Node<int> fiveSet(threeSet);
 
-    std::cout << "threeSet: ";
-    threeSet.print();
+    My_set<int> set_one(threeSet);
+    My_set<int> set_two(fiveSet);
+
+    std::cout << "set_one: ";
+    set_one.print();
     std::cout << "\n";
-    std::cout << "fiveSet: ";
-    fiveSet.print();
+    std::cout << "set_two: ";
+    set_two.print();
     std::cout << "\n";
-    std::cout << "Вставляю доп значения в fiveSet\n";
-    fiveSet.insert(10);
-    fiveSet.insert(15);
-    fiveSet.insert(12);
-    fiveSet.insert(0);
-    std::cout << "fiveSet: ";
-    fiveSet.print();
+    std::cout << "Вставляю доп значения в set_two\n";
+    set_two.insert(10);
+    set_two.insert(15);
+    set_two.insert(12);
+    set_two.insert(0);
+    std::cout << "set_two: ";
+    set_two.print();
     std::cout << "\n";
-    std::cout << "копирую конструктором копирования fiveSet\n";
-    List<int> sixSet(fiveSet);
-    std::cout << "fiveSet: ";
-    fiveSet.print();
-    std::cout << "sixSet: ";
-    sixSet.print();
+    std::cout << "копирую конструктором копирования set_two\n";
+    My_set<int> set_three(set_two);
+    std::cout << "set_two: ";
+    set_two.print();
+    std::cout << "set_three: ";
+    set_three.print();
     return 0;
 }
 
