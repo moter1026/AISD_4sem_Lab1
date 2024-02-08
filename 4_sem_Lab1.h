@@ -142,7 +142,7 @@ public:
 		}
 	}
 
-	void insert(T key) {
+	bool insert(T key) {
 		Node<T>* el = this->_element;
 		while (true) {
 			if (key < el->get_key() && el->get_left() != nullptr)
@@ -151,7 +151,7 @@ public:
 			}
 			else if (key < el->get_key() && el->get_left() == nullptr) {
 				el->set_left(new Node(key));
-				break;
+				return true;
 			}
 			else if (key > el->get_key() && el->get_right() != nullptr)
 			{
@@ -159,16 +159,17 @@ public:
 			}
 			else if (key > el->get_key() && el->get_right() == nullptr) {
 				el->set_right(new Node(key));
-				break;
+				return true;
 			}
 			else {
 				break;
 			}
 		}
-
+		return false;
 	}
 	Node<T>* get_element() { return this->_element; }
 	void print() {
 		this->_element->print();
 	}
+
 };
