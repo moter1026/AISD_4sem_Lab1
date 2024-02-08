@@ -68,13 +68,12 @@ public:
 		if (this->get_left() != nullptr) {	// обходим левые ветки, спускаемся к самому маленькому эл-ту
 			this->get_left()->print();
 		}
-		else								// доходим до самого левого эл-та, выводим его, возвращаемся назад
-		{
-			std::cout << this->get_key();
-			return;
-		}
+		//else								// доходим до самого левого эл-та, выводим его, возвращаемся назад
+		//{
+		//	std::cout << this->get_key() << " ";
+		//}
 
-		std::cout << this->get_key();		// выводим корень
+		std::cout << this->get_key() << " ";		// выводим корень
 
 		if (this->get_right() != nullptr)	// обходим правые ветки
 		{

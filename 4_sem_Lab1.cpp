@@ -17,8 +17,26 @@ int main()
 
     List<int> fiveSet(threeSet);
 
+    std::cout << "threeSet: ";
     threeSet.print();
+    std::cout << "\n";
+    std::cout << "fiveSet: ";
     fiveSet.print();
+    std::cout << "\n";
+    std::cout << "Вставляю доп значения в fiveSet\n";
+    fiveSet.insert(10);
+    fiveSet.insert(15);
+    fiveSet.insert(12);
+    fiveSet.insert(0);
+    std::cout << "fiveSet: ";
+    fiveSet.print();
+    std::cout << "\n";
+    std::cout << "копирую конструктором копирования fiveSet\n";
+    List<int> sixSet(fiveSet);
+    std::cout << "fiveSet: ";
+    fiveSet.print();
+    std::cout << "sixSet: ";
+    sixSet.print();
     return 0;
 }
 
