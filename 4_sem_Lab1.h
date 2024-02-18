@@ -19,7 +19,6 @@ private:
 	T _key;
 	Node* _right_ptr;
 	Node* _left_ptr;
-	//List* _root_ptr;
 public:
 	Node() = default;
 	Node(Node&  obj) {
@@ -63,7 +62,6 @@ private:
 	std::complex<T> _key;
 	Node< std::complex<T>>* _right_ptr;
 	Node< std::complex<T>>* _left_ptr;
-	//List* _root_ptr;
 public:
 	Node() = default;
 	Node(Node< std::complex<T>>& obj) {
@@ -504,7 +502,6 @@ public:
 	Node<std::complex<T>>* get_element() { return this->_element; }
 	bool insert(std::complex<T> key) {
 		Node<std::complex<T>>* el = this->_element;
-		//std::complex<T> el_cmp = el->get_key();
 		Node<std::complex<T>>* ptr_obj = nullptr;
 
 		bool res = this->compare(*el, key, ptr_obj);
@@ -538,40 +535,6 @@ public:
 			}
 		}
 		return false;
-
-		//double key_length = this->length(&key);
-
-		//while (true) {
-		//	std::complex<T> el_cmp = el->get_key();
-		//	//double el_length = this->length(&el_cmp);
-		//	if (areEqual(key_length, el_length))
-		//	{
-		//		if (el_cmp.real == key.real && el_cmp.imag == key.imag)	break;
-		//	}
-		//	else if (key_length < el_length && el->get_left() != nullptr)
-		//	{
-		//		el = el->get_left();
-		//	}
-		//	else if (key_length < el_length && el->get_left() == nullptr) {
-		//		el->set_left(new Node(key));
-		//		this->_count++;
-		//		return true;
-		//	}
-		//	else if (key_length > el_length && el->get_right() != nullptr)
-		//	{
-		//		el = el->get_right();
-		//	}
-		//	else if (key_length > el_length && el->get_right() == nullptr) {
-		//		el->set_right(new Node(key));
-		//		this->_count++;
-		//		return true;
-		//	}
-		//	else {
-		//		break;
-		//	}
-		//}
-
-		//return false;
 	}
 	bool contains(std::complex<T> key) {	// переделать
 		Node<std::complex<T>>* el = this->_element;
@@ -579,32 +542,6 @@ public:
 		if (!el) return false;
 		return this->compare(*el, key, ptr);
 
-		/*long double key_length = this->length(&key);
-
-		while (true) {
-			std::complex<T> el_cmp = el->get_key();
-			long double el_length = this->length(&el_cmp);
-
-			if (areEqual(key_length, el_length)) {
-				return true;
-			}
-			else if (key_length < el_length && el->get_left() != nullptr)
-			{
-				el = el->get_left();
-			}
-			else if (key_length < el_length && el->get_left() == nullptr) {
-				return false;
-			}
-			else if (key_length > el_length && el->get_right() != nullptr)
-			{
-				el = el->get_right();
-			}
-			else if (key_length > el_length && el->get_right() == nullptr) {
-				return false;
-			}
-			 
-		}
-		return false;*/
 	} 
 	bool erase(std::complex<T> key) {
 		Node<std::complex<T>>* el = this->_element;

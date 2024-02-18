@@ -135,8 +135,8 @@ int main()
 
                 _set.insert(dist(gen));
 
-int end_add = std::clock();
-sum_add += (end_add - start_add);
+                int end_add = std::clock();
+                sum_add += (end_add - start_add);
             }
             set_medium_add[s] = (double)sum_add / ATTEMPT_CONTAINS_ADD_DEL;
             std::cout << "Закончили добавлять. Сред. время - " << set_medium_add[s] << "\n\n\n";
@@ -236,15 +236,15 @@ sum_add += (end_add - start_add);
 
 
 
-        delete set_medium_insert;
-        delete set_medium_contains;
-        delete set_medium_add;
-        delete set_medium_delete;
+        delete[] set_medium_insert;
+        delete[] set_medium_contains;
+        delete[] set_medium_add;
+        delete[] set_medium_delete;
 
-        delete vector_medium_insert;
-        delete vector_medium_contains;
-        delete vector_medium_add;
-        delete vector_medium_delete;
+        delete[] vector_medium_insert;
+        delete[] vector_medium_contains;
+        delete[] vector_medium_add;
+        delete[] vector_medium_delete;
     }
 
     std::cout << "\n\n";
