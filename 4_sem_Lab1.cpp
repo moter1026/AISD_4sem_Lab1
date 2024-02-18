@@ -7,6 +7,10 @@
 #include <algorithm>
 #include <complex>
 
+#define ATTEMPT 100
+#define ATTEMPT_CONTAINS_ADD_DEL 1000
+#define COUNT_SIZE 3
+
 using namespace std;
 
 size_t lcg() {
@@ -31,7 +35,10 @@ int main()
         }
 
         std::vector<int> repeat = repeat_els(&_vector);
-
+        bool do_sort;
+        std::cout << "Отсортировать вектор из повторяющихся эл-тов?\nДа - любое число, Нет - 0\n";
+        std::cin >> do_sort;
+        if (do_sort)    std::sort(repeat.begin(), repeat.end());
         for (size_t i = 0; i < repeat.size(); i++)
         {
             std::cout << repeat[i] << " ";
@@ -46,26 +53,24 @@ int main()
 
         std::cout << "Измеряем время для дерева поиска...\n";
         int size[] = { 1000, 10000, 100000 };
-        double set_medium_insert[3];
-        double set_medium_contains[3];
-        double set_medium_add[3];
-        double set_medium_delete[3];
+        double set_medium_insert[COUNT_SIZE];
+        double set_medium_contains[COUNT_SIZE];
+        double set_medium_add[COUNT_SIZE];
+        double set_medium_delete[COUNT_SIZE];
 
-        double vector_medium_insert[3];
-        double vector_medium_contains[3];
-        double vector_medium_add[3];
-        double vector_medium_delete[3];
+        double vector_medium_insert[COUNT_SIZE];
+        double vector_medium_contains[COUNT_SIZE];
+        double vector_medium_add[COUNT_SIZE];
+        double vector_medium_delete[COUNT_SIZE];
 
-        const int attempt = 100;
-        const int attempt_contains_add_del = 1000;
 
-        for (size_t s = 0; s < 3; ++s)
+        for (size_t s = 0; s < COUNT_SIZE; ++s)
         {
             std::cout << "\n>>> Выполняем процедуры для дерева размером " << size[s] << "\n\n";
 
             std::cout << "Заполняем " << size[s] << " псевдо случайными числами...\n";
             size_t sum_insert = 0;
-            for (size_t j = 0; j < attempt; ++j)
+            for (size_t j = 0; j < ATTEMPT; ++j)
             {
                 int start_insert = std::clock();
                 My_set<int> _set(static_cast<int>(lcg()));
@@ -76,7 +81,7 @@ int main()
                 int end_insert = std::clock();
                 sum_insert += (end_insert - start_insert);
             }
-            set_medium_insert[s] = (double)sum_insert / attempt;
+            set_medium_insert[s] = (double)sum_insert / ATTEMPT;
             std::cout << "Закончили заполнять. Сред. время - " << set_medium_insert[s] << "\n\n\n";
 
 
@@ -87,7 +92,7 @@ int main()
 
             std::cout << "Проверяем наличие значений...\n";
             size_t sum_contains = 0;
-            for (size_t i = 0; i < attempt_contains_add_del; i++)
+            for (size_t i = 0; i < ATTEMPT_CONTAINS_ADD_DEL; i++)
             {
                 int start_contains = std::clock();
 
@@ -96,13 +101,13 @@ int main()
                 int end_contains = std::clock();
                 sum_contains += (end_contains - start_contains);
             }
-            set_medium_contains[s] = (double)sum_contains / attempt_contains_add_del;
+            set_medium_contains[s] = (double)sum_contains / ATTEMPT_CONTAINS_ADD_DEL;
             std::cout << "Закончили проверять. Сред. время - " << set_medium_contains[s] << "\n\n\n";
 
 
             std::cout << "Добавляем значения...\n";
             size_t sum_add = 0;
-            for (size_t i = 0; i < attempt_contains_add_del; i++)
+            for (size_t i = 0; i < ATTEMPT_CONTAINS_ADD_DEL; i++)
             {
                 int start_add = std::clock();
 
@@ -111,12 +116,12 @@ int main()
 int end_add = std::clock();
 sum_add += (end_add - start_add);
             }
-            set_medium_add[s] = (double)sum_add / attempt_contains_add_del;
+            set_medium_add[s] = (double)sum_add / ATTEMPT_CONTAINS_ADD_DEL;
             std::cout << "Закончили добавлять. Сред. время - " << set_medium_add[s] << "\n\n\n";
 
             std::cout << "Удаляем значения...\n";
             size_t sum_delete = 0;
-            for (size_t i = 0; i < attempt_contains_add_del; i++)
+            for (size_t i = 0; i < ATTEMPT_CONTAINS_ADD_DEL; i++)
             {
                 int start_delete = std::clock();
 
@@ -124,7 +129,7 @@ sum_add += (end_add - start_add);
                 int end_delete = std::clock();
                 sum_delete += (end_delete - start_delete);
             }
-            set_medium_delete[s] = (double)sum_delete / attempt_contains_add_del;
+            set_medium_delete[s] = (double)sum_delete / ATTEMPT_CONTAINS_ADD_DEL;
             std::cout << "Закончили удалять. Время - " << set_medium_delete[s] << "\n\n\n";
         }
 
@@ -132,49 +137,36 @@ sum_add += (end_add - start_add);
 
 
 
-        for (size_t s = 0; s < 3; ++s)
+        for (size_t s = 0; s < COUNT_SIZE; ++s)
         {
             std::cout << "\n>>> Выполняем процедуры для VECTOR размером " << size[s] << "\n\n";
 
-            std::cout << "Заполняем " << size[s] << " псевдо случайными числами...\n";
+            std::cout << "Заполняем в случайном порядке" << size[s] << " псевдо случайными числами...\n";
             size_t sum_insert = 0;
-            for (size_t j = 0; j < attempt; ++j)
+            for (size_t j = 0; j < ATTEMPT; ++j)
             {
                 int start_insert = std::clock();
                 std::vector<int> _vector(static_cast<int>(lcg()));
                 for (size_t i = 1; i < size[s]; ++i) {
-
                     int val = static_cast<int>(lcg());
-                    for (size_t i = 0; i < _vector.size() - 1; i++)
-                    {
-                        if (val <= _vector[i])
-                        {
-                            _vector.insert(_vector.begin() + i, val);
-                            break;
-                        }
-                        else if (i == _vector.size() - 1)
-                        {
-                            _vector.push_back(val);
-                        }
-
-                    }
+                    _vector.push_back(val);
                 }
                 //std::cout << j;
                 int end_insert = std::clock();
                 sum_insert += (end_insert - start_insert);
             }
-            vector_medium_insert[s] = (double)sum_insert / attempt;
+            vector_medium_insert[s] = (double)sum_insert / ATTEMPT;
             std::cout << "Закончили заполнять. Сред. время - " << vector_medium_insert[s] << "\n\n\n";
 
 
-            std::vector<int> _vector(static_cast<int>(lcg()));
+            std::vector<int> _vector(static_cast<int>(lcg()));      // Здесь создаём вектор, который дальше будем проверять
             for (size_t i = 1; i < size[s]; ++i) {
                 _vector.push_back(static_cast<int>(lcg()));
             }
 
             std::cout << "Проверяем наличие значений...\n";
             size_t sum_contains = 0;
-            for (size_t i = 0; i < attempt_contains_add_del; i++)
+            for (size_t i = 0; i < ATTEMPT_CONTAINS_ADD_DEL; i++)
             {
                 int start_contains = std::clock();
 
@@ -183,13 +175,13 @@ sum_add += (end_add - start_add);
                 int end_contains = std::clock();
                 sum_contains += (end_contains - start_contains);
             }
-            vector_medium_contains[s] = (double)sum_contains / attempt_contains_add_del;
+            vector_medium_contains[s] = (double)sum_contains / ATTEMPT_CONTAINS_ADD_DEL;
             std::cout << "Закончили проверять. Сред. время - " << vector_medium_contains[s] << "\n\n\n";
 
 
             std::cout << "Добавляем значения...\n";
             size_t sum_add = 0;
-            for (size_t i = 0; i < attempt_contains_add_del; i++)
+            for (size_t i = 0; i < ATTEMPT_CONTAINS_ADD_DEL; i++)
             {
                 int start_add = std::clock();
 
@@ -198,12 +190,12 @@ sum_add += (end_add - start_add);
                 int end_add = std::clock();
                 sum_add += (end_add - start_add);
             }
-            vector_medium_add[s] = (double)sum_add / attempt_contains_add_del;
+            vector_medium_add[s] = (double)sum_add / ATTEMPT_CONTAINS_ADD_DEL;
             std::cout << "Закончили добавлять. Сред. время - " << vector_medium_add[s] << "\n\n\n";
 
             std::cout << "Удаляем значения...\n";
             size_t sum_delete = 0;
-            for (size_t i = 0; i < attempt_contains_add_del; i++)
+            for (size_t i = 0; i < ATTEMPT_CONTAINS_ADD_DEL; i++)
             {
                 int start_delete = std::clock();
 
@@ -214,7 +206,7 @@ sum_add += (end_add - start_add);
                 int end_delete = std::clock();
                 sum_delete += (end_delete - start_delete);
             }
-            vector_medium_delete[s] = (double)sum_delete / attempt_contains_add_del;
+            vector_medium_delete[s] = (double)sum_delete / ATTEMPT_CONTAINS_ADD_DEL;
             std::cout << "Закончили удалять. Время - " << vector_medium_delete[s] << "\n\n\n";
         }
     }

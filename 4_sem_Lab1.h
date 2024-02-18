@@ -608,24 +608,21 @@ public:
 
 
 std::vector<int> repeat_els(std::vector<int>* _vec) {
-	std::vector<int> sort = *_vec;
-	std::sort(sort.begin(), sort.end());
-	
+	size_t size = (*_vec).size();
 	std::vector<int> new_vector;
-	bool add = false;
-	for (size_t i = 0; i < sort.size() - 2; i++)
+	if (size == 0) return new_vector;
+		
+	My_set<int> my_set((*_vec)[0]);
+	for (size_t i = 1; i < size; ++i)
 	{
-		if (sort[i] == sort[i + 1] && add == false)
-		{
-			new_vector.push_back(sort[i]);
-			add = true;
-			continue;
-		}
-		else if (sort[i] == sort[i + 1] && add != false) {
-			continue;
-		}
+		if (my_set.insert((*_vec)[i])) continue;
 		else {
-			add = false;
+			int el = (*_vec)[i];
+			auto it = std::find(new_vector.begin(), new_vector.end(), el);
+			if (new_vector.end() == it)
+			{
+				new_vector.push_back(el);
+			}
 		}
 	}
 
