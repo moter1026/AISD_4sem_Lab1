@@ -6,6 +6,7 @@
 #include <random>
 #include <algorithm>
 #include <complex>
+#include <string>
 
 #define ATTEMPT 100
 #define ATTEMPT_CONTAINS_ADD_DEL 1000
@@ -17,6 +18,26 @@ size_t lcg() {
     static size_t x = 0;
     x = (1021 * x + 24631) % 116640;
     return x;
+}
+
+std::string generateRandomText(int length) {
+    // Создаем генератор случайных чисел
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    // Определяем символы, которые могут использоваться в случайной строке
+    const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    // Создаем распределение для выбора случайных символов
+    std::uniform_int_distribution<> distribution(0, characters.size() - 1);
+
+    // Генерируем случайную строку
+    std::string randomText;
+    for (int i = 0; i < length; ++i) {
+        randomText += characters[distribution(gen)];
+    }
+
+    return randomText;
 }
 
 
@@ -53,15 +74,15 @@ int main()
 
         std::cout << "Измеряем время для дерева поиска...\n";
         int size[] = { 1000, 10000, 100000 };
-        double set_medium_insert[COUNT_SIZE];
-        double set_medium_contains[COUNT_SIZE];
-        double set_medium_add[COUNT_SIZE];
-        double set_medium_delete[COUNT_SIZE];
+        double* set_medium_insert = new double[COUNT_SIZE];
+        double* set_medium_contains = new double[COUNT_SIZE];
+        double* set_medium_add = new double[COUNT_SIZE];
+        double* set_medium_delete = new double[COUNT_SIZE];
 
-        double vector_medium_insert[COUNT_SIZE];
-        double vector_medium_contains[COUNT_SIZE];
-        double vector_medium_add[COUNT_SIZE];
-        double vector_medium_delete[COUNT_SIZE];
+        double* vector_medium_insert = new double[COUNT_SIZE];
+        double* vector_medium_contains = new double[COUNT_SIZE];
+        double* vector_medium_add = new double[COUNT_SIZE];
+        double* vector_medium_delete = new double[COUNT_SIZE];
 
 
         for (size_t s = 0; s < COUNT_SIZE; ++s)
@@ -97,6 +118,7 @@ int main()
                 int start_contains = std::clock();
 
                 bool res = _set.contains(dist(gen));
+                std::cout << res << " ";
 
                 int end_contains = std::clock();
                 sum_contains += (end_contains - start_contains);
@@ -126,6 +148,7 @@ sum_add += (end_add - start_add);
                 int start_delete = std::clock();
 
                 bool res = _set.erase(dist(gen));
+                std::cout << res << " ";
                 int end_delete = std::clock();
                 sum_delete += (end_delete - start_delete);
             }
@@ -171,6 +194,7 @@ sum_add += (end_add - start_add);
                 int start_contains = std::clock();
 
                 bool res = std::find(_vector.begin(), _vector.end(), dist(gen)) != _vector.end();
+                std::cout << res << " ";
 
                 int end_contains = std::clock();
                 sum_contains += (end_contains - start_contains);
@@ -209,34 +233,102 @@ sum_add += (end_add - start_add);
             vector_medium_delete[s] = (double)sum_delete / ATTEMPT_CONTAINS_ADD_DEL;
             std::cout << "Закончили удалять. Время - " << vector_medium_delete[s] << "\n\n\n";
         }
+
+
+
+        delete set_medium_insert;
+        delete set_medium_contains;
+        delete set_medium_add;
+        delete set_medium_delete;
+
+        delete vector_medium_insert;
+        delete vector_medium_contains;
+        delete vector_medium_add;
+        delete vector_medium_delete;
     }
 
-
-
-    
-
+    std::cout << "\n\n";
+    std::cout << "\n\n";
     
     {
         random_device rd;
         mt19937 gen(rd());
         uniform_int_distribution<> dist(0, 1000);
 
-        std::complex<float> cpl_float(10.5, 2.5);
-        My_set<std::complex<float>> _set(cpl_float);
+        std::complex<float>* cpl_float = new std::complex<float>(6.5, 2.5);
+        My_set<std::complex<float>>* _set = new My_set<std::complex<float>>(*cpl_float);
 
-        std::cout << _set.get_element()->get_key() << "\n";
+        std::cout << _set->get_element()->get_key() << "\n";
 
         for (size_t i = 0; i < 1100; i++)
         {
             std::complex<float> cpl((float)dist(gen) / 100, (float)dist(gen) / 100);
-            _set.insert(cpl);
+            _set->insert(cpl);
         }
-        std::complex<float> cpl(1.93, 0.6);
-        _set.insert(cpl);
+        std::complex<float> cpl((float)1.93, (float)0.6);
+        _set->insert(cpl);
 
-        (_set.contains(cpl) == 0) ? std::cout << "false" << "\n" : std::cout << "true" << "\n";
+        (_set->contains(cpl) == 0) ? std::cout << "false" << "\n" : std::cout << "true" << "\n";
+        _set->print();
+        std::cout << "\n" << _set->erase(*cpl_float) << "\n";
+        _set->print();
 
-        std::cout << _set.erase(cpl_float) << "\n";
+        delete _set;
+        delete cpl_float;
+    }
+
+    std::cout << "\n\n";
+    std::cout << "\n\n";
+
+    {
+        random_device rd;
+        mt19937 gen(rd());
+        uniform_int_distribution<> dist(0, 1000);
+
+        std::complex<double>* cpl_float = new std::complex<double>(3.5, 2.5);
+        My_set<std::complex<double>>* _set = new My_set<std::complex<double>>(*cpl_float);
+
+        std::cout << _set->get_element()->get_key() << "\n";
+
+        for (size_t i = 0; i < 1100; i++)
+        {
+            std::complex<double> cpl((double)dist(gen) / 100, (double)dist(gen) / 100);
+            _set->insert(cpl);
+        }
+        std::complex<double> cpl(1.93, 0.6);
+        _set->insert(cpl);
+
+        (_set->contains(cpl) == 0) ? std::cout << "false" << "\n" : std::cout << "true" << "\n";
+        _set->print();
+        std::cout << "\n" << _set->erase(*cpl_float) << "\n";
+        _set->print();
+
+        delete _set;
+        delete cpl_float;
+    }
+
+    std::cout << "\n\n";
+    std::cout << "\n\n";
+    
+    {
+        std::string* str = new std::string("Hello!");
+        My_set<std::string>* _set = new My_set<std::string>(*str);
+
+        for (size_t i = 0; i < 1100; i++)
+        {
+            std::string str1(generateRandomText(3));
+            _set->insert(str1);
+        }
+        std::string str1("good");
+        _set->insert(str1);
+
+        (_set->contains(str1) == 0) ? std::cout << "false" << "\n" : std::cout << "true" << "\n";
+        _set->print();
+        std::cout << "\n" << _set->erase(*str) << "\n";
+        _set->print();
+
+        delete str;
+        delete _set;
     }
     
     return 0;

@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <complex>
 
-
 // TODO: установите здесь ссылки на дополнительные заголовки, требующиеся для программы.
 
 
@@ -23,7 +22,7 @@ private:
 	//List* _root_ptr;
 public:
 	Node() = default;
-	Node(Node& const obj) {
+	Node(Node&  obj) {
 		this->_key = obj.get_key();
 		this->_left_ptr = nullptr;
 		this->_right_ptr = nullptr;
@@ -57,6 +56,7 @@ public:
 		}
 	}
 };
+
 template<typename T>
 class Node<std::complex<T>> {
 private:
@@ -66,7 +66,7 @@ private:
 	//List* _root_ptr;
 public:
 	Node() = default;
-	Node(Node< std::complex<T>>& const obj) {
+	Node(Node< std::complex<T>>& obj) {
 		this->_key = obj.get_key();
 		this->_left_ptr = nullptr;
 		this->_right_ptr = nullptr;
@@ -114,7 +114,7 @@ public:
 	My_set(Node<T>* el): _count(1) {
 		this->_element = new Node<T>(*el);
 	};
-	My_set(My_set<T>& const obj) {
+	My_set(My_set<T>& obj) {
 		if (!&obj) { throw std::runtime_error("Передан пустой объект"); }
 
 		Node<T>* el = obj.get_element(); // создаю один Node, чтобы у первого элемента был адрес и ключ
@@ -144,7 +144,7 @@ public:
 			}
 		}
 	}
-	My_set(Node<T>& const node) {
+	My_set(Node<T>& node) {
 		if (!&node) { throw std::runtime_error("Передан пустой объект"); }
 
 		Node<T>* el = &node;
@@ -341,13 +341,76 @@ public:
 
 template<typename T>
 class My_set<std::complex<T>>  {
+protected:
+	class Is_inside_and_ptr {	// Класс для работы метода поиска 
+	public:
+		bool _is_inside;
+		Node<std::complex<T>>* _ptr;	// При использовании insert будет храть указатель на самый близкий к вставляемому эл-ту корню
+										// При использ. contains будет хранить эл-т на необходимы эл-т
+		Is_inside_and_ptr() = default;
+		Is_inside_and_ptr(bool is_inside, Node<std::complex<T>>* ptr): _is_inside(is_inside), _ptr(ptr) {}
+	};
+
 	Node<std::complex<T>>* _element;
 	int _count;
-	double length(std::complex<T>* cmp) {
+
+	long double length(std::complex<T>* cmp) {
 		return sqrt(powl(cmp->real(), 2) + powl(cmp->imag(), 2));
 	}
-	bool areEqual(double one, double two, double epsilon = 0.00001) {
+	bool areEqual(long double one, long double two, long double epsilon = 0.00001) {
 		return std::abs(one - two) < epsilon;
+	}
+	bool compare(Node<std::complex<T>>& root, std::complex<T> key, Node<std::complex<T>>* & ptr_obj) {	// Если ф-я возвращает false - значит эл-т не найден
+																								// out: is_in - возвращает либо сам эл-т, если он есть, либо ближайший корень 
+		Node<std::complex<T>>* el = &root;
+		auto k_real = key.real();
+		auto k_imag = key.imag();
+		while (true) {
+			std::complex<T> el_cmp = el->get_key();
+			auto el_real = el_cmp.real();
+			auto el_imag = el_cmp.imag();
+			if (k_real == el_real && k_imag == el_imag)
+			{
+				ptr_obj = el;
+				return true;
+			}
+			else if (k_real < el_real && el->get_left() != nullptr)
+			{
+				el = el->get_left();
+			}
+			else if (k_real < el_real && el->get_left() == nullptr) {
+				ptr_obj = el;
+				return false;
+			}
+			else if (k_real > el_real && el->get_right() != nullptr)
+			{
+				el = el->get_right();
+			}
+			else if (k_real > el_real && el->get_right() == nullptr) {
+				ptr_obj = el;
+				return false;
+			}
+			else if(k_real == el_real){
+				if (k_imag < el_imag && el->get_left() != nullptr)
+				{
+					el = el->get_left();
+				}
+				else if (k_imag < el_imag && el->get_left() == nullptr)
+				{
+					ptr_obj = el;
+					return false;
+				}
+				else if (k_imag > el_imag && el->get_right() != nullptr)
+				{
+					el = el->get_right();
+				}
+				else if (k_imag > el_imag && el->get_right() == nullptr) {
+					ptr_obj = el;
+					return false;
+				}
+			}
+		}
+			
 	}
 public:
 	My_set() : _element(new Node<std::complex<T>>(0, 0)), _count(1) {};
@@ -357,7 +420,7 @@ public:
 	My_set(Node<std::complex<T>>* el) : _count(1) {
 		this->_element = new Node<std::complex<T>>(*el);
 	};
-	My_set(My_set<std::complex<T>>& const obj) {
+	My_set(My_set<std::complex<T>>& obj) {
 		if (!&obj) { throw std::runtime_error("Передан пустой объект"); }
 
 		Node<std::complex<T>>* el = obj.get_element(); // создаю один Node, чтобы у первого элемента был адрес и ключ
@@ -387,7 +450,7 @@ public:
 			}
 		}
 	}
-	My_set(Node<std::complex<T>>& const node) {
+	My_set(Node<std::complex<T>>& node) {
 		if (!&node) { throw std::runtime_error("Передан пустой объект"); }
 
 		Node<std::complex<T>>* el = &node;
@@ -441,51 +504,86 @@ public:
 	Node<std::complex<T>>* get_element() { return this->_element; }
 	bool insert(std::complex<T> key) {
 		Node<std::complex<T>>* el = this->_element;
+		//std::complex<T> el_cmp = el->get_key();
+		Node<std::complex<T>>* ptr_obj = nullptr;
 
-
-		double key_length = this->length(&key);
-
-		while (true) {
-			std::complex<T> el_cmp = el->get_key();
-			double el_length = this->length(&el_cmp);
-			if (areEqual(key_length, el_length))
+		bool res = this->compare(*el, key, ptr_obj);
+		if (res) return false;
+		else {
+			std::complex<T> obj = ptr_obj->get_key();
+			auto k_real = key.real();
+			auto o_real = obj.real();
+			if (k_real < o_real && ptr_obj->get_left() == nullptr)
 			{
-				break;
-			}
-			else if (key_length < el_length && el->get_left() != nullptr)
-			{
-				el = el->get_left();
-			}
-			else if (key_length < el_length && el->get_left() == nullptr) {
-				el->set_left(new Node(key));
-				this->_count++;
+				ptr_obj->set_left(new Node<std::complex<T>>(key));
 				return true;
 			}
-			else if (key_length > el_length && el->get_right() != nullptr)
-			{
-				el = el->get_right();
-			}
-			else if (key_length > el_length && el->get_right() == nullptr) {
-				el->set_right(new Node(key));
-				this->_count++;
+			else if (k_real > o_real && ptr_obj->get_right() == nullptr) {
+				ptr_obj->set_right(new Node<std::complex<T>>(key));
 				return true;
 			}
-			else {
-				break;
+			else if (k_real == o_real)
+			{
+				auto k_imag = key.imag();
+				auto o_imag = obj.imag();
+				if (k_imag < o_imag && ptr_obj->get_left() == nullptr)
+				{
+					ptr_obj->set_left(new Node<std::complex<T>>(key));
+					return true;
+				}
+				else if (k_imag > o_imag && ptr_obj->get_right() == nullptr) {
+					ptr_obj->set_right(new Node<std::complex<T>>(key));
+					return true;
+				}
 			}
 		}
 		return false;
-	}
-	bool contains(std::complex<T> key) {
-		Node<std::complex<T>>* el = this->_element;
-		if (!el) return false;
-		
 
-		double key_length = this->length(&key);
+		//double key_length = this->length(&key);
+
+		//while (true) {
+		//	std::complex<T> el_cmp = el->get_key();
+		//	//double el_length = this->length(&el_cmp);
+		//	if (areEqual(key_length, el_length))
+		//	{
+		//		if (el_cmp.real == key.real && el_cmp.imag == key.imag)	break;
+		//	}
+		//	else if (key_length < el_length && el->get_left() != nullptr)
+		//	{
+		//		el = el->get_left();
+		//	}
+		//	else if (key_length < el_length && el->get_left() == nullptr) {
+		//		el->set_left(new Node(key));
+		//		this->_count++;
+		//		return true;
+		//	}
+		//	else if (key_length > el_length && el->get_right() != nullptr)
+		//	{
+		//		el = el->get_right();
+		//	}
+		//	else if (key_length > el_length && el->get_right() == nullptr) {
+		//		el->set_right(new Node(key));
+		//		this->_count++;
+		//		return true;
+		//	}
+		//	else {
+		//		break;
+		//	}
+		//}
+
+		//return false;
+	}
+	bool contains(std::complex<T> key) {	// переделать
+		Node<std::complex<T>>* el = this->_element;
+		Node<std::complex<T>>* ptr = nullptr;
+		if (!el) return false;
+		return this->compare(*el, key, ptr);
+
+		/*long double key_length = this->length(&key);
 
 		while (true) {
 			std::complex<T> el_cmp = el->get_key();
-			double el_length = this->length(&el_cmp);
+			long double el_length = this->length(&el_cmp);
 
 			if (areEqual(key_length, el_length)) {
 				return true;
@@ -506,23 +604,23 @@ public:
 			}
 			 
 		}
-		return false;
-	}
+		return false;*/
+	} 
 	bool erase(std::complex<T> key) {
 		Node<std::complex<T>>* el = this->_element;
 		if (el == nullptr) return false;
 		std::stack<Node<std::complex<T>>*> stk;
+		std::complex<T> el_cmp = el->get_key();
 		stk.push(el);
 
-
-		double key_length = this->length(&key);
-
-		while (true) {
-			std::complex<T> el_cmp = el->get_key();
-			double el_length = this->length(&el_cmp);
-
-			if (areEqual(key_length, el_length)) {
-				if (el->get_left() != nullptr && el->get_right() != nullptr)
+		auto k_real = key.real();
+		auto k_imag = key.imag();
+		while(true) {
+			auto el_real = el_cmp.real();
+			auto el_imag = el_cmp.imag();
+			if (k_real == el_real && k_imag == el_imag)
+			{
+				if (el->get_left() != nullptr && el->get_right() != nullptr) // Если два потомка, то самый правый, левого поддерева
 				{
 					Node<std::complex<T>>* now = el;
 					el = el->get_left();
@@ -537,14 +635,21 @@ public:
 
 				if (el->get_left() != nullptr && el->get_right() == nullptr)
 				{
-					stk.pop();
-					Node<std::complex<T>>* root = stk.top();
-					if (root->get_left() == el) {
-						root->set_left(el->get_left());
+					Node<std::complex<T>>* root = el;
+					if (stk.size() == 1) {
+						this->_element = el->get_left();
 					}
-					else if (root->get_right() == el)
+					else
 					{
-						root->set_right(el->get_left());
+						stk.pop();
+						root = stk.top();
+						if (root->get_left() == el) {
+							root->set_left(el->get_left());
+						}
+						else if (root->get_right() == el)
+						{
+							root->set_right(el->get_left());
+						}
 					}
 					this->_count--;
 					delete el;
@@ -552,14 +657,21 @@ public:
 				}
 				else if (el->get_left() == nullptr && el->get_right() != nullptr)
 				{
-					stk.pop();
-					Node<std::complex<T>>* root = stk.top();
-					if (root->get_left() == el) {
-						root->set_left(el->get_right());
+					Node<std::complex<T>>* root = el;
+					if (stk.size() == 1) {
+						this->_element = el->get_left();
 					}
-					else if (root->get_right() == el)
+					else
 					{
-						root->set_right(el->get_right());
+						stk.pop();
+						root = stk.top();
+						if (root->get_left() == el) {
+							root->set_left(el->get_right());
+						}
+						else if (root->get_right() == el)
+						{
+							root->set_right(el->get_right());
+						}
 					}
 					this->_count--;
 					delete el;
@@ -567,37 +679,58 @@ public:
 				}
 				else
 				{
-					stk.pop();
-					Node<std::complex<T>>* root = stk.top();
-					if (root->get_left() == el) {
-						root->set_left(nullptr);
+					Node<std::complex<T>>* root = el;
+					if (stk.size() == 1) {
+						this->_element = nullptr;
 					}
-					else if (root->get_right() == el)
+					else
 					{
-						root->set_right(nullptr);
+						stk.pop();
+						root = stk.top();
+						if (root->get_left() == el) {
+							root->set_left(nullptr);
+						}
+						else if (root->get_right() == el)
+						{
+							root->set_right(nullptr);
+						}
 					}
 					this->_count--;
 					delete el;
 					return true;
 				}
 			}
-			else if (key_length < el_length && el->get_left() != nullptr)
+			else if (k_real < el_real && el->get_left() != nullptr)
 			{
 				el = el->get_left();
-				stk.push(el);
 			}
-			else if (key_length < el_length && el->get_left() == nullptr) {
+			else if (k_real < el_real && el->get_left() == nullptr) {
 				return false;
 			}
-			else if (key_length > el_length && el->get_right() != nullptr)
+			else if (k_real > el_real && el->get_right() != nullptr)
 			{
 				el = el->get_right();
-				stk.push(el);
 			}
-			else if (key_length > el_length && el->get_right() == nullptr) {
+			else if (k_real > el_real && el->get_right() == nullptr) {
 				return false;
 			}
-			 
+			else if (k_real == el_real) {
+				if (k_imag < el_imag && el->get_left() != nullptr)
+				{
+					el = el->get_left();
+				}
+				else if (k_imag < el_imag && el->get_left() == nullptr)
+				{
+					return false;
+				}
+				else if (k_imag > el_imag && el->get_right() != nullptr)
+				{
+					el = el->get_right();
+				}
+				else if (k_imag > el_imag && el->get_right() == nullptr) {
+					return false;
+				}
+			}
 		}
 		return false;
 	}
