@@ -340,24 +340,9 @@ public:
 template<typename T>
 class My_set<std::complex<T>>  {
 protected:
-	class Is_inside_and_ptr {	// Класс для работы метода поиска 
-	public:
-		bool _is_inside;
-		Node<std::complex<T>>* _ptr;	// При использовании insert будет храть указатель на самый близкий к вставляемому эл-ту корню
-										// При использ. contains будет хранить эл-т на необходимы эл-т
-		Is_inside_and_ptr() = default;
-		Is_inside_and_ptr(bool is_inside, Node<std::complex<T>>* ptr): _is_inside(is_inside), _ptr(ptr) {}
-	};
-
 	Node<std::complex<T>>* _element;
 	int _count;
 
-	long double length(std::complex<T>* cmp) {
-		return sqrt(powl(cmp->real(), 2) + powl(cmp->imag(), 2));
-	}
-	bool areEqual(long double one, long double two, long double epsilon = 0.00001) {
-		return std::abs(one - two) < epsilon;
-	}
 	bool compare(Node<std::complex<T>>& root, std::complex<T> key, Node<std::complex<T>>* & ptr_obj) {	// Если ф-я возвращает false - значит эл-т не найден
 																								// out: is_in - возвращает либо сам эл-т, если он есть, либо ближайший корень 
 		Node<std::complex<T>>* el = &root;
@@ -498,7 +483,6 @@ public:
 		}
 	}
 
-
 	Node<std::complex<T>>* get_element() { return this->_element; }
 	bool insert(std::complex<T> key) {
 		Node<std::complex<T>>* el = this->_element;
@@ -541,7 +525,6 @@ public:
 		Node<std::complex<T>>* ptr = nullptr;
 		if (!el) return false;
 		return this->compare(*el, key, ptr);
-
 	} 
 	bool erase(std::complex<T> key) {
 		Node<std::complex<T>>* el = this->_element;
